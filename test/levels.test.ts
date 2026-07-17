@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { LEVELS, boardExtent, createGame, isValidGuess, randomTarget, submitGuess } from "../src/game/levels";
+import {
+  LEVELS,
+  boardExtent,
+  createGame,
+  isValidGuess,
+  randomTarget,
+  submitGuess,
+  submitPositionGuess,
+} from "../src/game/levels";
 
 const baseline = LEVELS[0];
 const rotated = LEVELS[1];
@@ -101,5 +109,46 @@ describe("submitGuess", () => {
     // but the target index must always remain within the surviving range.
     expect(state.target).toBeGreaterThanOrEqual(state.range.lo);
     expect(state.target).toBeLessThanOrEqual(state.range.hi);
+  });
+});
+
+describe("submitPositionGuess", () => {
+  it("is equivalent to typing the value at that position on baseline", () => {
+    const state = createGame(baseline, fixedRand(0.76)); // target 77
+    const fractionForValue40 = (40 - 1) / (baseline.size - 1);
+    const next = submitPositionGuess(state, fractionForValue40);
+    expect(next).toEqual(submitGuess(state, 40));
+  });
+
+  it("resolves to the correct rotated value at that bar position", () => {
+    const state = createGame(rotated, fixedRand(0.3));
+    // Guessing the actual target's own position must always win, regardless
+    // of rotation, since position <-> value is a consistent bijection.
+    const targetIndex = ((state.target - 1 - state.rotatedPivot!) % rotated.size + rotated.size) % rotated.size;
+    const next = submitPositionGuess(state, targetIndex / (rotated.size - 1));
+    expect(next.solved).toBe(true);
+  });
+
+  it("can always finish a duplicates game that value guesses alone cannot solve", () => {
+    // A pathological all-duplicate board: every value guess is either an
+    // uninformative "too low/high against a flat run" or lands exactly on
+    // the shared value with no index information.
+    let state = createGame(duplicates, fixedRand(0.5));
+    state = { ...state, displayValues: new Array(duplicates.size).fill(7), target: 42 };
+    state = submitGuess(state, 7); // value guess: makes zero progress on an all-flat board
+    expect(state.solved).toBe(false);
+    expect(state.range).toEqual({ lo: 0, hi: 99 });
+
+    // Linear position probing still finishes it off.
+    for (let i = 0; i < duplicates.size && !state.solved; i++) {
+      state = submitPositionGuess(state, i / (duplicates.size - 1));
+    }
+    expect(state.solved).toBe(true);
+  });
+
+  it("is a no-op once solved", () => {
+    const base = createGame(baseline, fixedRand(0.54));
+    const state = { ...base, range: { lo: 55, hi: 55 }, solved: true, guesses: 3 };
+    expect(submitPositionGuess(state, 0.9)).toEqual(state);
   });
 });
