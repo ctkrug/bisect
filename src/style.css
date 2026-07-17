@@ -105,6 +105,40 @@ body {
   color: var(--text-muted);
 }
 
+.hud-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon-btn {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.8rem;
+  padding: var(--space-1) var(--space-2);
+  min-height: 44px;
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.icon-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
 .status {
   position: fixed;
   top: var(--space-6);
@@ -194,6 +228,87 @@ body {
   text-align: center;
   font-size: 0.8rem;
   color: var(--danger);
+}
+
+.level-select[hidden] {
+  display: none;
+}
+
+.level-select {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background: rgba(10, 22, 40, 0.92);
+  backdrop-filter: blur(8px);
+  padding: var(--space-4);
+}
+
+.level-select__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.level-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  min-height: 44px;
+  background: var(--surface-1);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
+}
+
+.level-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+  transform: translateX(2px);
+}
+
+.level-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.level-card__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.level-card__status {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.level-card--done {
+  border-color: var(--success);
+}
+
+.level-card--done .level-card__status {
+  color: var(--success);
 }
 
 @media (max-width: 600px) {
