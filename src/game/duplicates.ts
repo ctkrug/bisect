@@ -41,3 +41,18 @@ export function narrowDuplicates(values: number[], range: Range, guessValue: num
   while (hi >= range.lo && values[hi] >= guessValue) hi--;
   return { lo: range.lo, hi };
 }
+
+/**
+ * Resolves a direct position pick (tapping a specific cell on the bar)
+ * against the hidden target index. Value-based guesses alone can get stuck
+ * once the range narrows to a run of identical duplicate values — no
+ * comparison can tell those cells apart. Picking a position directly
+ * sidesteps that: it's always safe (never strips the target's index) and
+ * always makes progress when the pick is wrong.
+ */
+export function resolveDuplicateIndex(range: Range, index: number, targetIndex: number): Range {
+  if (index === targetIndex) return { lo: index, hi: index };
+  if (index < range.lo || index > range.hi) return range;
+  if (index < targetIndex) return { lo: index + 1, hi: range.hi };
+  return { lo: range.lo, hi: index - 1 };
+}
