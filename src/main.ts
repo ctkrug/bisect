@@ -91,11 +91,13 @@ const winGuessesEl = document.querySelector<HTMLElement>("#win-guesses")!;
 const winOptimalEl = document.querySelector<HTMLElement>("#win-optimal")!;
 const winCtaBtn = document.querySelector<HTMLButtonElement>("#win-cta")!;
 
+const LEVEL_IDS = LEVELS.map((l) => l.id);
+
 const storage = getSafeStorage(() => window.localStorage);
 const sfx = new Sfx(storage);
 let progress: Progress = loadProgress(storage);
 let view: "play" | "select" | "won" = "play";
-let level: LevelConfig = LEVELS.find((l) => l.id === nextUnplayedLevelId(LEVELS.map((l) => l.id), progress)) ?? LEVELS[0];
+let level: LevelConfig = LEVELS.find((l) => l.id === nextUnplayedLevelId(LEVEL_IDS, progress)) ?? LEVELS[0];
 let game: GameState = createGame(level);
 let tween: Tween = createTween(game.range, game.range, performance.now(), 0);
 let impactStart = -Infinity;
@@ -194,10 +196,7 @@ function fireWinBurst(): void {
 }
 
 function showWinOverlay(): void {
-  const nextId = nextUnplayedLevelId(
-    LEVELS.map((l) => l.id),
-    progress,
-  );
+  const nextId = nextUnplayedLevelId(LEVEL_IDS, progress);
   const hasNext = nextId !== level.id;
   winGuessesEl.textContent = String(game.guesses);
   winOptimalEl.textContent = String(optimalGuessCount(level.size));
@@ -208,10 +207,7 @@ function showWinOverlay(): void {
 }
 
 winCtaBtn.addEventListener("click", () => {
-  const nextId = nextUnplayedLevelId(
-    LEVELS.map((l) => l.id),
-    progress,
-  );
+  const nextId = nextUnplayedLevelId(LEVEL_IDS, progress);
   const next = LEVELS.find((l) => l.id === nextId) ?? level;
   startLevel(next);
   setView("play");
