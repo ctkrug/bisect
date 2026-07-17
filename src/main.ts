@@ -1,5 +1,5 @@
 import "./style.css";
-import { LEVELS, createGame, isValidGuess, randomTarget, submitGuess, type GameState } from "./game/levels";
+import { LEVELS, boardExtent, createGame, isValidGuess, submitGuess, type GameState } from "./game/levels";
 import { computeBoardLayout, extentFraction } from "./render/layout";
 import { drawBackground, drawBoard } from "./render/board";
 import { createTween, tweenRange, type Tween } from "./render/tween";
@@ -44,7 +44,7 @@ const input = document.querySelector<HTMLInputElement>("#guess-input")!;
 const errorEl = document.querySelector<HTMLElement>("#error")!;
 
 const level = LEVELS[0];
-let game: GameState = createGame(level, randomTarget(level.size));
+let game: GameState = createGame(level);
 let tween: Tween = createTween(game.range, game.range, performance.now(), 0);
 let impactStart = -Infinity;
 
@@ -102,7 +102,7 @@ function frame(now: number): void {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const layout = computeBoardLayout(width, height);
-  const bounds = { lo: 1, hi: level.size };
+  const bounds = boardExtent(level);
   const liveRange = tweenRange(tween, now);
   const fraction = extentFraction(liveRange, bounds);
   const impactElapsed = now - impactStart;
