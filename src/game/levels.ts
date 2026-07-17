@@ -1,6 +1,6 @@
 import { type Range, isSolved, narrow } from "./range";
 import { narrowRotated, valueAt } from "./rotated";
-import { generateDuplicateValues, narrowDuplicates } from "./duplicates";
+import { generateDuplicateValues, narrowDuplicates, resolveDuplicateIndex } from "./duplicates";
 
 export type LevelId = "baseline" | "rotated" | "duplicates";
 
@@ -81,4 +81,30 @@ export function submitGuess(state: GameState, guess: number): GameState {
   }
 
   return { ...state, range, guesses: state.guesses + 1, solved: isSolved(range) };
+}
+
+/**
+ * Applies a click/tap at a 0..1 fraction along the board to the game state.
+ * For baseline/rotated this is equivalent to typing the value at that
+ * position. For duplicates it's the only way to break a tie once the range
+ * has narrowed to a run of identical values that value guesses can't
+ * distinguish (see resolveDuplicateIndex).
+ */
+export function submitPositionGuess(state: GameState, fraction: number): GameState {
+  if (state.solved) return state;
+
+  const bounds = boardExtent(state.level);
+  const clamped = Math.min(1, Math.max(0, fraction));
+  const position = Math.round(bounds.lo + clamped * (bounds.hi - bounds.lo));
+
+  if (state.level.id === "duplicates") {
+    const range = resolveDuplicateIndex(state.range, position, state.target);
+    return { ...state, range, guesses: state.guesses + 1, solved: isSolved(range) };
+  }
+
+  const guessValue =
+    state.level.id === "rotated"
+      ? valueAt({ size: state.level.size, pivot: state.rotatedPivot! }, position)
+      : position;
+  return submitGuess(state, guessValue);
 }
