@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img"
+     aria-label="Bisect board: a range bar with the left half dimmed and a glowing cyan surviving sliver on the right, marked by an amber cut line.">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient id="divider" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4fd1ff" />
+      <stop offset="1" stop-color="#ff8a4c" />
+    </linearGradient>
+  </defs>
+
+  <!-- blueprint background + grid -->
+  <rect width="1200" height="460" fill="#0a1628" />
+  <g stroke="#4fd1ff" stroke-opacity="0.12" stroke-width="1">
+    <path d="M40 0V460M80 0V460M120 0V460M160 0V460M200 0V460M240 0V460M280 0V460M320 0V460M360 0V460M400 0V460M440 0V460M480 0V460M520 0V460M560 0V460M600 0V460M640 0V460M680 0V460M720 0V460M760 0V460M800 0V460M840 0V460M880 0V460M920 0V460M960 0V460M1000 0V460M1040 0V460M1080 0V460M1120 0V460M1160 0V460" />
+    <path d="M0 40H1200M0 80H1200M0 120H1200M0 160H1200M0 200H1200M0 240H1200M0 280H1200M0 320H1200M0 360H1200M0 400H1200M0 440H1200" />
+  </g>
+
+  <!-- wordmark -->
+  <g font-family="'IBM Plex Mono', ui-monospace, monospace" font-weight="700">
+    <text x="80" y="90" fill="#e8f1fb" font-size="34" letter-spacing="3">B</text>
+    <rect x="112" y="66" width="4" height="30" rx="1" fill="url(#divider)" />
+    <text x="120" y="90" fill="#e8f1fb" font-size="34" letter-spacing="3">SECT</text>
+    <text x="1120" y="90" fill="#7f9db9" font-size="20" text-anchor="end">Guesses: 3</text>
+  </g>
+
+  <!-- track -->
+  <rect x="80" y="170" width="1040" height="150" rx="2" fill="#0f2138" stroke="#4fd1ff" stroke-opacity="0.3" />
+
+  <!-- dimmed (eliminated) left half -->
+  <rect x="80" y="170" width="600" height="150" rx="2" fill="#16304f" fill-opacity="0.4" />
+
+  <!-- surviving sliver (glowing cyan) -->
+  <rect x="680" y="170" width="230" height="150" rx="2" fill="#4fd1ff" filter="url(#glow)" />
+
+  <!-- amber cut line at the leading edge -->
+  <rect x="678" y="158" width="4" height="174" rx="1" fill="#ff8a4c" />
+
+  <!-- range end labels -->
+  <g font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="18" fill="#7f9db9">
+    <text x="80" y="360">1</text>
+    <text x="1120" y="360" text-anchor="end">100</text>
+  </g>
+</svg>
