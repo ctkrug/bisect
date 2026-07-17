@@ -12,10 +12,12 @@ export function narrow(range: Range, guess: number, target: number): Range {
   if (guess === target) {
     return { lo: target, hi: target };
   }
+  // Clamp against the current bounds: a stale guess (re-submitting a value
+  // already ruled out beyond lo/hi) must never widen the range back open.
   if (guess < target) {
-    return { lo: guess + 1, hi: range.hi };
+    return { lo: Math.max(range.lo, guess + 1), hi: range.hi };
   }
-  return { lo: range.lo, hi: guess - 1 };
+  return { lo: range.lo, hi: Math.min(range.hi, guess - 1) };
 }
 
 export function isSolved(range: Range): boolean {

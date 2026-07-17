@@ -29,8 +29,10 @@ export function narrowRotated(level: RotatedLevel, range: Range, guessValue: num
     return { lo: guessIndex, hi: guessIndex };
   }
   const targetIndex = indexOf(level, targetValue);
+  // Clamp against the current bounds: a stale guess (re-submitting a value
+  // already ruled out beyond lo/hi) must never widen the range back open.
   if (guessIndex < targetIndex) {
-    return { lo: guessIndex + 1, hi: range.hi };
+    return { lo: Math.max(range.lo, guessIndex + 1), hi: range.hi };
   }
-  return { lo: range.lo, hi: guessIndex - 1 };
+  return { lo: range.lo, hi: Math.min(range.hi, guessIndex - 1) };
 }
