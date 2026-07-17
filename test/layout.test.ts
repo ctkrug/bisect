@@ -22,6 +22,11 @@ describe("computeBoardLayout", () => {
     expect(layout.height).toBeCloseTo(844 * 0.55);
     expect(layout.width).toBe(390 - 48);
   });
+
+  it("treats the breakpoint width itself as desktop, not phone", () => {
+    expect(computeBoardLayout(600, 900).orientation).toBe("horizontal");
+    expect(computeBoardLayout(599, 900).orientation).toBe("vertical");
+  });
 });
 
 describe("extentFraction", () => {
