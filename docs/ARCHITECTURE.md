@@ -23,14 +23,16 @@ src/
     range.ts        # baseline (1-indexed value range) narrow/isSolved/optimalGuessCount
     rotated.ts       # Level 2: valueAt/indexOf map bar position <-> value under a rotation
                       # pivot; narrowRotated compares by position, not value order
-    duplicates.ts     # Level 3: generateDuplicateValues + narrowDuplicates, which only
-                      # strips indices provably outside the target's value
-    levels.ts         # LevelConfig/GameState + createGame/submitGuess: dispatches to the
-                      # right narrow* function per level and owns each level's hidden state
-                      # (rotation pivot, duplicate-laden values array)
+    duplicates.ts     # Level 3: generateDuplicateValues + narrowDuplicates (only strips
+                      # indices provably outside the target's value) + resolveDuplicateIndex
+                      # (direct position-pick tiebreaker — see "Why click-to-guess exists" below)
+    levels.ts         # LevelConfig/GameState + createGame/submitGuess/submitPositionGuess:
+                      # dispatches to the right narrow* function per level and owns each
+                      # level's hidden state (rotation pivot, duplicate-laden values array)
   render/
     layout.ts         # pure: viewport size -> board panel rect + orientation (breakpoint
-                      # at 600px switches horizontal desktop bar <-> vertical phone stack)
+                      # at 600px switches horizontal desktop bar <-> vertical phone stack);
+                      # pointToFraction maps a click point back to a board-relative fraction
     tween.ts          # pure: ease-out interpolation between two Ranges over time
     board.ts           # canvas drawing only (grid, track, dimmed halves, glowing survivor,
                       # cut-line flash) — takes layout + fraction + impact, draws, no state
@@ -73,6 +75,20 @@ src/
 
 Rendering doesn't need to know which domain it's in — `extentFraction(range, boardExtent(level))`
 always produces a 0..1 fraction of the panel regardless of domain.
+
+## Why click-to-guess exists
+
+Typing a number is the primary interaction, but the board is also clickable
+(`main.ts`'s canvas click handler -> `pointToFraction` -> `submitPositionGuess`). This isn't
+just a nice-to-have: a scripted playthrough during BUILD found that Level 3 can get
+**permanently stuck** on typed guesses alone. Once the range narrows to a run of cells sharing
+the exact same value, every further value comparison is either "equal" (no new information —
+the elimination sweep can't move) or lands on the wrong side of a value that no longer appears
+in the remaining range. `resolveDuplicateIndex` breaks the tie by comparing bar *position*
+directly instead of value, which is always informative. `submitPositionGuess` reuses this for
+duplicates and is simply equivalent to typing the value at that position for baseline/rotated
+(see `test/duplicates.test.ts`'s "stuck-flat-run" regression test and
+`test/levels.test.ts`'s `submitPositionGuess` coverage for the full story).
 
 ## Testing approach
 
