@@ -218,7 +218,7 @@ winCtaBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && view === "won") {
+  if (event.key === "Escape" && view !== "play") {
     setView("play");
   }
 });
