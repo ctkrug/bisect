@@ -19,10 +19,12 @@ import { Sfx } from "./audio/sfx";
 
 const IMPACT_DECAY_MS = 90;
 
-const app = document.querySelector<HTMLDivElement>("#app");
-if (!app) {
+const appRoot = document.querySelector<HTMLDivElement>("#app");
+if (!appRoot) {
   throw new Error("missing #app root element");
 }
+// Narrowed, non-null alias so the render loop can read the hero's live size.
+const app: HTMLDivElement = appRoot;
 
 app.innerHTML = `
   <canvas id="board" aria-hidden="true"></canvas>
@@ -36,6 +38,7 @@ app.innerHTML = `
       <span id="level-name" class="level-name"></span>
       <button type="button" id="mute-btn" class="icon-btn" aria-pressed="false">Sound: On</button>
       <button type="button" id="levels-btn" class="icon-btn" aria-label="Choose a level">Levels</button>
+      <a class="icon-btn" href="https://github.com/ctkrug/bisect" target="_blank" rel="noopener">Code</a>
     </div>
   </header>
   <main class="status" id="status" aria-live="polite"></main>
@@ -271,8 +274,8 @@ canvas.addEventListener("click", (event) => {
 
 function resize(): void {
   const dpr = window.devicePixelRatio || 1;
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const width = app.clientWidth;
+  const height = app.clientHeight;
   canvas.width = width * dpr;
   canvas.height = height * dpr;
   canvas.style.width = `${width}px`;
@@ -281,8 +284,8 @@ function resize(): void {
 }
 
 function frame(now: number): void {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const width = app.clientWidth;
+  const height = app.clientHeight;
   const layout = computeBoardLayout(width, height);
   const bounds = boardExtent(level);
   const liveRange = tweenRange(tween, now);
