@@ -17,7 +17,11 @@ if (!app) {
 app.innerHTML = `
   <canvas id="board" aria-hidden="true"></canvas>
   <header class="hud hud--top">
-    <span class="wordmark">BISECT</span>
+    <span class="wordmark" role="img" aria-label="Bisect">
+      <span class="wordmark__part wordmark__part--left">B</span>
+      <span class="wordmark__divider" aria-hidden="true"></span>
+      <span class="wordmark__part wordmark__part--right">SECT</span>
+    </span>
     <div class="hud-controls">
       <span id="level-name" class="level-name"></span>
       <button type="button" id="mute-btn" class="icon-btn" aria-pressed="false">Sound: On</button>

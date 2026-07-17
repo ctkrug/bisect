@@ -92,11 +92,70 @@ body {
 }
 
 .wordmark {
+  display: inline-flex;
+  align-items: stretch;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1.5rem;
   letter-spacing: 0.06em;
   color: var(--text);
+}
+
+.wordmark__part--left {
+  animation: wordmark-flinch-left 700ms ease-out 1;
+}
+
+.wordmark__part--right {
+  animation: wordmark-flinch-right 700ms ease-out 1;
+}
+
+.wordmark__divider {
+  width: 4px;
+  margin: 0 2px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-support));
+  background-size: 100% 240%;
+  animation: wordmark-sweep 3200ms ease-in-out infinite;
+}
+
+@keyframes wordmark-flinch-left {
+  0% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(-2px);
+  }
+  70% {
+    transform: translateX(1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes wordmark-flinch-right {
+  0% {
+    transform: translateX(0);
+  }
+  35% {
+    transform: translateX(2px);
+  }
+  70% {
+    transform: translateX(-1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes wordmark-sweep {
+  0%,
+  100% {
+    background-position: 0 0%;
+  }
+  50% {
+    background-position: 0 100%;
+  }
 }
 
 .level-name {
