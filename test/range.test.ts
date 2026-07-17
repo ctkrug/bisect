@@ -13,6 +13,18 @@ describe("narrow", () => {
   it("collapses to a single value on a correct guess", () => {
     expect(narrow({ lo: 1, hi: 100 }, 55, 55)).toEqual({ lo: 55, hi: 55 });
   });
+
+  it("never widens the range when re-guessing an already-eliminated low value", () => {
+    const narrowed = narrow({ lo: 1, hi: 100 }, 50, 75); // {lo: 51, hi: 100}
+    const restale = narrow(narrowed, 10, 75); // 10 was already ruled out below the range
+    expect(restale).toEqual(narrowed);
+  });
+
+  it("never widens the range when re-guessing an already-eliminated high value", () => {
+    const narrowed = narrow({ lo: 1, hi: 100 }, 60, 12); // {lo: 1, hi: 59}
+    const restale = narrow(narrowed, 90, 12); // 90 was already ruled out above the range
+    expect(restale).toEqual(narrowed);
+  });
 });
 
 describe("isSolved", () => {

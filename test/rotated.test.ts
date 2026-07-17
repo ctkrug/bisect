@@ -42,4 +42,13 @@ describe("narrowRotated", () => {
     const result = narrowRotated(level, { lo: 0, hi: 9 }, 3, 9);
     expect(result).toEqual({ lo: 0, hi: 7 });
   });
+
+  it("never widens the range when re-guessing an already-eliminated index", () => {
+    // target value 2 at index 7; guess value 8 (index 3) narrows to [4, 9].
+    const narrowed = narrowRotated(level, { lo: 0, hi: 9 }, 8, 2);
+    expect(narrowed).toEqual({ lo: 4, hi: 9 });
+    // Re-guessing value 5 (index 0) is stale — its index is already below lo.
+    const restale = narrowRotated(level, narrowed, 5, 2);
+    expect(restale).toEqual(narrowed);
+  });
 });
