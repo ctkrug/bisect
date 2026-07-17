@@ -8,6 +8,7 @@ A concise map of the codebase for anyone (including a future session) picking th
 npm install
 npm run dev        # local dev server
 npm test           # vitest run — unit tests only, no browser
+npm run test:coverage  # vitest run --coverage — v8 line/branch/function report
 npm run typecheck  # tsc -b --noEmit
 npm run build      # tsc -b && vite build -> dist/
 ```
@@ -42,6 +43,9 @@ src/
   storage/
     progress.ts        # loadProgress/saveProgress/markLevelComplete/nextUnplayedLevelId —
                       # Storage is injected (not hardcoded to window.localStorage) for tests
+    safeStorage.ts     # getSafeStorage(): probes window.localStorage and falls back to an
+                      # in-memory Storage if access itself throws (private-browsing/disabled
+                      # storage) — main.ts's only path to a Storage instance
   main.ts              # wires everything: DOM shell, requestAnimationFrame loop, guess form,
                       # level-select overlay, win overlay, mute button
   style.css            # docs/DESIGN.md tokens as CSS custom properties + all component styles
@@ -92,8 +96,16 @@ duplicates and is simply equivalent to typing the value at that position for bas
 
 ## Testing approach
 
-Game logic (`game/*`) and pure render math (`render/layout.ts`, `render/tween.ts`) are fully
-unit tested, including boundary cases and a couple of seeded property-based fuzz tests
-(`duplicates.test.ts`). `render/board.ts` (actual canvas drawing) and `main.ts` (DOM wiring) are
-intentionally left to manual/visual verification — there's no meaningful pure logic to assert on
-there beyond what the layout/tween tests already cover.
+Game logic (`game/*`), pure render math (`render/layout.ts`, `render/tween.ts`), and both
+storage modules and `audio/sfx.ts` (via an injected fake WebAudio graph) sit at 100%
+line/branch/function coverage, including boundary cases and a couple of seeded property-based
+fuzz tests (`duplicates.test.ts`). `render/board.ts` (actual canvas drawing) and `main.ts` (DOM
+wiring) are intentionally left to manual/visual verification via a headless-Chromium
+playthrough — there's no meaningful pure logic to assert on there beyond what the
+layout/tween/storage tests already cover.
+
+A key invariant worth knowing if you touch `narrow`/`narrowRotated`: the returned range must
+never be wider than the range passed in, even for a stale guess that re-submits a value already
+ruled out on the far side. Both clamp their computed bound with `Math.max`/`Math.min` against
+the incoming `range` for exactly this reason (`narrowDuplicates` is naturally immune — it sweeps
+from the current bounds instead of deriving a bound from the raw guess).
