@@ -4,10 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
-    <title>Bisect — a guessing game with zero text hints</title>
+    <title>Bisect — a binary search game you play by eye</title>
     <meta
       name="description"
-      content="Every guess splits the bar and dims the losing half. Learn binary search with your eyes, not with hints."
+      content="A visual number guessing game with zero text hints: every guess splits a bar and dims the losing half, so you learn binary search by eye."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Bisect — a binary search game you play by eye" />
+    <meta
+      property="og:description"
+      content="A visual number guessing game with zero text hints. Every guess splits a bar and dims the half that cannot hold the answer."
     />
     <link
       rel="icon"
@@ -24,6 +30,106 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <section class="landing" aria-labelledby="about-heading">
+      <div class="landing__inner">
+        <header class="landing__brand">
+          <span class="wordmark wordmark--static" role="img" aria-label="Bisect">
+            <span class="wordmark__part">B</span
+            ><span class="wordmark__divider wordmark__divider--static" aria-hidden="true"></span
+            ><span class="wordmark__part">SECT</span>
+          </span>
+          <p class="landing__tagline">A binary search game you play by eye.</p>
+        </header>
+
+        <div class="landing__grid">
+          <article>
+            <h2 id="about-heading">A binary search game with zero text hints</h2>
+            <p>
+              Bisect is a visual number guessing game. It hides a target in a range from 1 to 100,
+              and every guess splits that range on screen: the half that cannot hold the target
+              dims out, and the surviving sliver redraws to fill the space. Nothing ever says "too
+              high" or "too low"; you read direction from which side kept its color.
+            </p>
+            <p>
+              By the fourth guess most people stop doing arithmetic and start halving the range on
+              instinct. That instinct is binary search. Bisect teaches it the way you actually build
+              intuition, by watching a search space collapse instead of reading a rule.
+            </p>
+          </article>
+          <ul class="landing__features">
+            <li>
+              <strong>Zero text hints.</strong> The bar and its dimming are the only feedback. No
+              "higher or lower," ever.
+            </li>
+            <li>
+              <strong>Three real edge cases.</strong> A clean range, a rotated range, and a range
+              with duplicates, the same twists a binary search interview throws at you.
+            </li>
+            <li>
+              <strong>Guess vs. optimal.</strong> Each win shows your guess count next to the
+              information-theoretic minimum, ⌈log₂ N⌉.
+            </li>
+            <li>
+              <strong>Plays anywhere.</strong> Runs in the browser with no login and no install, on
+              phone and desktop, with synthesized sound you can mute.
+            </li>
+          </ul>
+        </div>
+
+        <section class="landing__faq" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">Questions</h2>
+          <dl>
+            <dt>What is Bisect?</dt>
+            <dd>
+              A number guessing game where every guess visibly splits a bar and dims the half that
+              can no longer contain the answer. It is a binary search game with no text hints, built
+              to make the algorithm something you can see.
+            </dd>
+
+            <dt>How is this a binary search game?</dt>
+            <dd>
+              Binary search finds a value by repeatedly halving a sorted range. In Bisect each guess
+              does exactly that on screen, so playing well is the same as running the algorithm by
+              hand: guess the middle, watch half disappear, repeat.
+            </dd>
+
+            <dt>Why a visual number guessing game instead of "higher or lower"?</dt>
+            <dd>
+              Text hints do the search for you and leave nothing behind. A visual number guessing
+              game draws the range you are searching, so the narrowing becomes muscle memory instead
+              of a sentence you skim.
+            </dd>
+
+            <dt>What do the later levels add?</dt>
+            <dd>
+              Level 2 rotates the range so ascending order no longer matches screen position, and
+              Level 3 fills it with duplicates so a single guess does not always cut the space
+              cleanly. Both are classic binary search interview variants, taught the same visual way.
+            </dd>
+
+            <dt>Do I need to know how to code?</dt>
+            <dd>
+              No. The whole game is visual and language-free. It helps programmers feel an algorithm
+              they already know, but anyone who can find a number between 1 and 100 can play.
+            </dd>
+          </dl>
+        </section>
+
+        <div class="landing__cta">
+          <a class="guess-submit" href="https://github.com/ctkrug/bisect" target="_blank" rel="noopener"
+            >View on GitHub</a
+          >
+        </div>
+
+        <footer class="landing__footer">
+          <a href="https://apps.charliekrug.com" target="_blank" rel="noopener"
+            >More by Charlie Krug → apps.charliekrug.com</a
+          >
+        </footer>
+      </div>
+    </section>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>
