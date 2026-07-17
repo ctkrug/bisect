@@ -311,6 +311,104 @@ body {
   color: var(--success);
 }
 
+.win-overlay[hidden] {
+  display: none;
+}
+
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 22, 40, 0.92);
+  backdrop-filter: blur(8px);
+  padding: var(--space-4);
+}
+
+.win-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4);
+  background: var(--surface-1);
+  border: 1px solid var(--success);
+  border-radius: var(--radius);
+  box-shadow: 0 0 32px rgba(74, 222, 128, 0.3);
+  text-align: center;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.win-burst {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.win-burst__tick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 28px;
+  margin-left: -1px;
+  background: var(--accent);
+  transform-origin: 50% 0;
+  animation: burst-tick 700ms ease-out forwards;
+}
+
+@keyframes burst-tick {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--r, 0deg)) scaleY(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--r, 0deg)) translateY(60px) scaleY(1);
+  }
+}
+
+.win-card__eyebrow {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.75rem;
+  letter-spacing: 0.04em;
+  color: var(--success);
+}
+
+.win-card__stats {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.win-card__stat {
+  font-weight: 700;
+}
+
+.win-card__optimal {
+  color: var(--text-muted);
+}
+
+.win-cta {
+  margin-top: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win-burst__tick {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 @media (max-width: 600px) {
   .wordmark {
     font-size: 1.125rem;
