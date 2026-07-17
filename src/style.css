@@ -1,5 +1,26 @@
 :root {
   color-scheme: dark;
+
+  --bg: #0a1628;
+  --surface-1: #0f2138;
+  --surface-2: #16304f;
+  --text: #e8f1fb;
+  --text-muted: #7f9db9;
+  --accent: #4fd1ff;
+  --accent-support: #ff8a4c;
+  --success: #4ade80;
+  --danger: #ff5c5c;
+
+  --font-display: "IBM Plex Mono", ui-monospace, monospace;
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --radius: 2px;
+  --glow: 0 0 24px rgba(79, 209, 255, 0.25);
 }
 
 * {
@@ -13,14 +34,181 @@ body {
 }
 
 body {
-  display: grid;
-  place-items: center;
-  background: #0a1628;
-  color: #e8f1fb;
-  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  overflow: hidden;
 }
 
 #app {
+  position: relative;
   width: 100%;
   height: 100%;
+}
+
+#board {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hud {
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(15, 33, 56, 0.72);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+.hud--top {
+  top: 0;
+  border-bottom: 1px solid rgba(79, 209, 255, 0.2);
+  justify-content: space-between;
+}
+
+.hud--bottom {
+  bottom: 0;
+  border-top: 1px solid rgba(79, 209, 255, 0.2);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.level-name {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.status {
+  position: fixed;
+  top: var(--space-6);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.guess-form {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.guess-input {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  width: 6rem;
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-1);
+  color: var(--text);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+  min-height: 44px;
+}
+
+.guess-input::-webkit-outer-spin-button,
+.guess-input::-webkit-inner-spin-button {
+  margin: 0;
+}
+
+.guess-input:hover {
+  border-color: var(--accent);
+}
+
+.guess-input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+.guess-submit {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 1rem;
+  padding: var(--space-1) var(--space-3);
+  min-height: 44px;
+  min-width: 44px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out;
+}
+
+.guess-submit:hover {
+  background: #7adfff;
+  box-shadow: var(--glow);
+}
+
+.guess-submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.guess-submit:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.guess-submit:disabled {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.error {
+  min-height: 1.2em;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+@media (max-width: 600px) {
+  .wordmark {
+    font-size: 1.125rem;
+  }
+
+  .level-name {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
