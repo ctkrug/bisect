@@ -52,3 +52,17 @@ export function extentFraction(range: Range, bounds: Range): ExtentFraction {
 function clamp01(n: number): number {
   return Math.min(1, Math.max(0, n));
 }
+
+/**
+ * Maps a click/tap point to a 0..1 fraction along the board's primary axis,
+ * or null if the point falls outside the panel. Lets the player pick a
+ * position on the bar directly instead of typing a guess.
+ */
+export function pointToFraction(x: number, y: number, layout: BoardLayout): number | null {
+  if (x < layout.x || x > layout.x + layout.width || y < layout.y || y > layout.y + layout.height) {
+    return null;
+  }
+  return layout.orientation === "horizontal"
+    ? (x - layout.x) / layout.width
+    : (y - layout.y) / layout.height;
+}
