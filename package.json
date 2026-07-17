@@ -4,6 +4,9 @@
   "private": true,
   "description": "A number-guessing game with zero text hints — every guess splits a bar and dims the losing half.",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
