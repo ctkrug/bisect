@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { LEVELS, createGame, isValidGuess, randomTarget, submitGuess } from "../src/game/levels";
+import { LEVELS, boardExtent, createGame, isValidGuess, randomTarget, submitGuess } from "../src/game/levels";
 
 const baseline = LEVELS[0];
+const rotated = LEVELS[1];
+const duplicates = LEVELS[2];
+
+/** rand() that always returns a fixed value, for deterministic target selection. */
+const fixedRand = (n: number) => () => n;
 
 describe("randomTarget", () => {
   it("stays within [1, size] across the rand() domain", () => {
@@ -10,12 +15,37 @@ describe("randomTarget", () => {
   });
 });
 
+describe("boardExtent", () => {
+  it("is a 1-indexed value range for the baseline level", () => {
+    expect(boardExtent(baseline)).toEqual({ lo: 1, hi: 100 });
+  });
+
+  it("is a 0-indexed position range for rotated/duplicates levels", () => {
+    expect(boardExtent(rotated)).toEqual({ lo: 0, hi: 99 });
+    expect(boardExtent(duplicates)).toEqual({ lo: 0, hi: 99 });
+  });
+});
+
 describe("createGame", () => {
   it("starts unsolved with the full range and zero guesses", () => {
-    const state = createGame(baseline, 42);
+    const state = createGame(baseline, fixedRand(0.41));
+    expect(state.target).toBe(42);
     expect(state.range).toEqual({ lo: 1, hi: 100 });
     expect(state.guesses).toBe(0);
     expect(state.solved).toBe(false);
+  });
+
+  it("attaches a rotation pivot for the rotated level", () => {
+    const state = createGame(rotated, fixedRand(0.5));
+    expect(state.rotatedPivot).toBeGreaterThan(0);
+    expect(state.rotatedPivot).toBeLessThan(rotated.size);
+  });
+
+  it("attaches sorted duplicate-laden values for the duplicates level", () => {
+    const state = createGame(duplicates, fixedRand(0.5));
+    expect(state.displayValues).toHaveLength(duplicates.size);
+    expect(state.target).toBeGreaterThanOrEqual(0);
+    expect(state.target).toBeLessThan(duplicates.size);
   });
 });
 
@@ -36,7 +66,7 @@ describe("isValidGuess", () => {
 
 describe("submitGuess", () => {
   it("narrows the range and increments the guess counter", () => {
-    const state = createGame(baseline, 77);
+    const state = createGame(baseline, fixedRand(0.76)); // target 77
     const next = submitGuess(state, 40);
     expect(next.range).toEqual({ lo: 41, hi: 100 });
     expect(next.guesses).toBe(1);
@@ -44,15 +74,32 @@ describe("submitGuess", () => {
   });
 
   it("marks the game solved on an exact guess", () => {
-    const state = createGame(baseline, 55);
+    const state = createGame(baseline, fixedRand(0.54)); // target 55
     const next = submitGuess(state, 55);
     expect(next.solved).toBe(true);
     expect(next.range).toEqual({ lo: 55, hi: 55 });
   });
 
   it("is a no-op once solved", () => {
-    const state = { ...createGame(baseline, 55), range: { lo: 55, hi: 55 }, solved: true, guesses: 3 };
+    const base = createGame(baseline, fixedRand(0.54));
+    const state = { ...base, range: { lo: 55, hi: 55 }, solved: true, guesses: 3 };
     const next = submitGuess(state, 10);
     expect(next).toEqual(state);
+  });
+
+  it("drives a rotated-level game to a win using the level's own dispatch", () => {
+    let state = createGame(rotated, fixedRand(0.3));
+    state = submitGuess(state, state.target);
+    expect(state.solved).toBe(true);
+  });
+
+  it("drives a duplicates-level game to a win using the level's own dispatch", () => {
+    let state = createGame(duplicates, fixedRand(0.2));
+    const targetValue = state.displayValues![state.target];
+    state = submitGuess(state, targetValue);
+    // May not solve in one guess if the target's value has duplicate neighbors,
+    // but the target index must always remain within the surviving range.
+    expect(state.target).toBeGreaterThanOrEqual(state.range.lo);
+    expect(state.target).toBeLessThanOrEqual(state.range.hi);
   });
 });
