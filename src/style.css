@@ -81,6 +81,8 @@ body {
   top: 0;
   border-bottom: 1px solid rgba(79, 209, 255, 0.2);
   justify-content: space-between;
+  /* Above the level-select/win overlays (z-index 3/4) so mute/levels stay reachable. */
+  z-index: 5;
 }
 
 .hud--bottom {
@@ -305,6 +307,12 @@ body {
   background: rgba(10, 22, 40, 0.92);
   backdrop-filter: blur(8px);
   padding: var(--space-4);
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.level-select.is-open {
+  opacity: 1;
 }
 
 .level-select__title {
@@ -384,6 +392,12 @@ body {
   background: rgba(10, 22, 40, 0.92);
   backdrop-filter: blur(8px);
   padding: var(--space-4);
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.win-overlay.is-open {
+  opacity: 1;
 }
 
 .win-card {

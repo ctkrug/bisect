@@ -16,20 +16,20 @@ if (!app) {
 
 app.innerHTML = `
   <canvas id="board" aria-hidden="true"></canvas>
+  <header class="hud hud--top">
+    <span class="wordmark" role="img" aria-label="Bisect">
+      <span class="wordmark__part wordmark__part--left">B</span>
+      <span class="wordmark__divider" aria-hidden="true"></span>
+      <span class="wordmark__part wordmark__part--right">SECT</span>
+    </span>
+    <div class="hud-controls">
+      <span id="level-name" class="level-name"></span>
+      <button type="button" id="mute-btn" class="icon-btn" aria-pressed="false">Sound: On</button>
+      <button type="button" id="levels-btn" class="icon-btn" aria-label="Choose a level">Levels</button>
+    </div>
+  </header>
+  <main class="status" id="status" aria-live="polite"></main>
   <div id="game-shell">
-    <header class="hud hud--top">
-      <span class="wordmark" role="img" aria-label="Bisect">
-        <span class="wordmark__part wordmark__part--left">B</span>
-        <span class="wordmark__divider" aria-hidden="true"></span>
-        <span class="wordmark__part wordmark__part--right">SECT</span>
-      </span>
-      <div class="hud-controls">
-        <span id="level-name" class="level-name"></span>
-        <button type="button" id="mute-btn" class="icon-btn" aria-pressed="false">Sound: On</button>
-        <button type="button" id="levels-btn" class="icon-btn" aria-label="Choose a level">Levels</button>
-      </div>
-    </header>
-    <main class="status" id="status" aria-live="polite"></main>
     <footer class="hud hud--bottom">
       <form id="guess-form" class="guess-form" autocomplete="off">
         <label for="guess-input" class="visually-hidden">Enter your guess</label>
@@ -144,10 +144,25 @@ function renderLevelList(): void {
   }
 }
 
+const OVERLAY_TRANSITION_MS = 150;
+
+/** Fades an overlay in/out over the DESIGN.md UI-transition duration instead of an instant cut. */
+function setOverlayOpen(el: HTMLElement, open: boolean): void {
+  if (open) {
+    el.hidden = false;
+    requestAnimationFrame(() => el.classList.add("is-open"));
+  } else {
+    el.classList.remove("is-open");
+    setTimeout(() => {
+      if (!el.classList.contains("is-open")) el.hidden = true;
+    }, OVERLAY_TRANSITION_MS);
+  }
+}
+
 function setView(next: "play" | "select" | "won"): void {
   view = next;
-  selectScreen.hidden = view !== "select";
-  winOverlay.hidden = view !== "won";
+  setOverlayOpen(selectScreen, view === "select");
+  setOverlayOpen(winOverlay, view === "won");
   canvas.style.visibility = view === "play" ? "visible" : "hidden";
   gameShell.inert = view !== "play";
   if (view === "select") renderLevelList();
