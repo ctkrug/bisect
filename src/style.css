@@ -50,6 +50,7 @@ body {
   position: fixed;
   inset: 0;
   display: block;
+  cursor: pointer;
 }
 
 .visually-hidden {

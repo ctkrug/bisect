@@ -1,7 +1,16 @@
 import "./style.css";
-import { LEVELS, boardExtent, createGame, isValidGuess, submitGuess, type GameState, type LevelConfig } from "./game/levels";
+import {
+  LEVELS,
+  boardExtent,
+  createGame,
+  isValidGuess,
+  submitGuess,
+  submitPositionGuess,
+  type GameState,
+  type LevelConfig,
+} from "./game/levels";
 import { optimalGuessCount } from "./game/range";
-import { computeBoardLayout, extentFraction } from "./render/layout";
+import { computeBoardLayout, extentFraction, pointToFraction } from "./render/layout";
 import { drawBackground, drawBoard } from "./render/board";
 import { createTween, tweenRange, type Tween } from "./render/tween";
 import { loadProgress, markLevelComplete, nextUnplayedLevelId, saveProgress, type Progress } from "./storage/progress";
@@ -214,6 +223,25 @@ window.addEventListener("keydown", (event) => {
 
 startLevel(level);
 
+/** Applies a resolved guess (typed or clicked) uniformly: tween, impact, SFX, win handling. */
+function applyGuess(nextState: GameState): void {
+  const wasSolved = game.solved;
+  const previousRange = game.range;
+  game = nextState;
+  tween = createTween(previousRange, game.range, performance.now());
+  impactStart = performance.now();
+  updateStatus();
+  sfx.tick();
+  sfx.narrow();
+
+  if (game.solved && !wasSolved) {
+    progress = markLevelComplete(progress, level.id);
+    saveProgress(window.localStorage, progress);
+    sfx.success();
+    showWinOverlay();
+  }
+}
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (game.solved) return;
@@ -227,22 +255,20 @@ form.addEventListener("submit", (event) => {
   }
 
   showError("");
-  const previousRange = game.range;
-  const wasSolved = game.solved;
-  game = submitGuess(game, guess);
-  tween = createTween(previousRange, game.range, performance.now());
-  impactStart = performance.now();
   input.value = "";
-  updateStatus();
-  sfx.tick();
-  sfx.narrow();
+  applyGuess(submitGuess(game, guess));
+});
 
-  if (game.solved && !wasSolved) {
-    progress = markLevelComplete(progress, level.id);
-    saveProgress(window.localStorage, progress);
-    sfx.success();
-    showWinOverlay();
-  }
+canvas.addEventListener("click", (event) => {
+  if (view !== "play" || game.solved) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const layout = computeBoardLayout(rect.width, rect.height);
+  const fraction = pointToFraction(event.clientX - rect.left, event.clientY - rect.top, layout);
+  if (fraction === null) return;
+
+  showError("");
+  applyGuess(submitPositionGuess(game, fraction));
 });
 
 function resize(): void {
