@@ -1,6 +1,6 @@
 {
   "name": "bisect",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "A number-guessing game with zero text hints — every guess splits a bar and dims the losing half.",
   "type": "module",
