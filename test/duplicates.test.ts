@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateDuplicateValues, narrowDuplicates } from "../src/game/duplicates";
+import { generateDuplicateValues, narrowDuplicates, resolveDuplicateIndex } from "../src/game/duplicates";
 
 /** Deterministic PRNG so property tests are reproducible. */
 function mulberry32(seed: number): () => number {
@@ -74,5 +74,44 @@ describe("narrowDuplicates", () => {
       expect(targetIndex).toBeGreaterThanOrEqual(range.lo);
       expect(targetIndex).toBeLessThanOrEqual(range.hi);
     }
+  });
+
+  it("regression: value guesses alone can get stuck inside a duplicate run", () => {
+    // A flat run where every remaining cell shares the same value: no
+    // value-based guess (too-low, too-high, or exact) can ever narrow
+    // further once here, even guessing the exact value repeatedly.
+    const flat = [5, 5, 5, 5, 5];
+    let range = { lo: 0, hi: 4 };
+    const targetIndex = 3;
+    for (let i = 0; i < 10; i++) {
+      range = narrowDuplicates(flat, range, 5, targetIndex);
+    }
+    expect(range).toEqual({ lo: 0, hi: 4 }); // never narrows past the flat run
+  });
+});
+
+describe("resolveDuplicateIndex", () => {
+  it("solves instantly on a correct pick", () => {
+    expect(resolveDuplicateIndex({ lo: 0, hi: 4 }, 3, 3)).toEqual({ lo: 3, hi: 3 });
+  });
+
+  it("eliminates the picked index and everything provably on its side", () => {
+    expect(resolveDuplicateIndex({ lo: 0, hi: 4 }, 1, 3)).toEqual({ lo: 2, hi: 4 });
+    expect(resolveDuplicateIndex({ lo: 0, hi: 4 }, 4, 1)).toEqual({ lo: 0, hi: 3 });
+  });
+
+  it("leaves the range untouched for a pick outside current bounds", () => {
+    expect(resolveDuplicateIndex({ lo: 2, hi: 4 }, 0, 3)).toEqual({ lo: 2, hi: 4 });
+  });
+
+  it("breaks the stuck-flat-run case that value guesses cannot resolve", () => {
+    let range = { lo: 0, hi: 4 };
+    const targetIndex = 3;
+    // Linearly probing each candidate always finishes within run length.
+    for (const pick of [0, 1, 2, 4, 3]) {
+      if (range.lo === range.hi) break;
+      range = resolveDuplicateIndex(range, pick, targetIndex);
+    }
+    expect(range).toEqual({ lo: 3, hi: 3 });
   });
 });
