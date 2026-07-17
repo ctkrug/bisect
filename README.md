@@ -18,15 +18,17 @@ Your first guess splits the bar and one half dims out instantly. No numbers tell
 happened — just the range visibly shrinking. Four guesses in, it clicks: you're doing binary
 search with your eyes.
 
-## Planned features
+## Features
 
 - **Pure visual feedback** — no "higher/lower" text, ever. The bar and its dimming *is* the hint.
-- **Escalating levels** — a clean range, then a rotated range, then a range with duplicates,
-  each one encoding a real binary-search edge case.
-- **Juice** — tweened splits, synth sound effects (WebAudio, no audio files), and a proper win
-  celebration with run stats.
-- **Guess-efficiency tracking** — see how close you got to the information-theoretic optimum
-  (⌈log₂ N⌉ guesses).
+- **Three levels** — a clean range, a rotated range, and a range with duplicates, each one
+  encoding a real binary-search edge case. Progress persists in `localStorage` and a level-select
+  screen (reachable from the header, never blocking the first guess) tracks what's complete.
+- **Juice** — tweened splits, an impact flash/shake on every guess, synthesized WebAudio SFX
+  (tick / narrow / success / error, no audio files) with a persisted mute toggle, and a win
+  celebration overlay with a tick-mark burst and run stats.
+- **Guess-efficiency tracking** — the win overlay shows guesses taken vs. the
+  information-theoretic optimum (⌈log₂ N⌉).
 
 ## Stack
 
@@ -37,8 +39,11 @@ search with your eyes.
 
 ## Status
 
-Early scaffold. See [`docs/VISION.md`](docs/VISION.md) for the design and
-[`docs/BACKLOG.md`](docs/BACKLOG.md) for the build plan.
+Core gameplay is complete and playable end to end: all three levels, the split/dim board with
+tweened feedback and synth SFX, level select with persisted progress, and a win celebration.
+See [`docs/VISION.md`](docs/VISION.md) for the design, [`docs/DESIGN.md`](docs/DESIGN.md) for
+the visual direction, [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how the code is laid
+out, and [`docs/BACKLOG.md`](docs/BACKLOG.md) for what's left.
 
 ## Development
 
