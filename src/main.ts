@@ -14,6 +14,7 @@ import { computeBoardLayout, extentFraction, pointToFraction } from "./render/la
 import { drawBackground, drawBoard } from "./render/board";
 import { createTween, tweenRange, type Tween } from "./render/tween";
 import { loadProgress, markLevelComplete, nextUnplayedLevelId, saveProgress, type Progress } from "./storage/progress";
+import { getSafeStorage } from "./storage/safeStorage";
 import { Sfx } from "./audio/sfx";
 
 const IMPACT_DECAY_MS = 90;
@@ -90,8 +91,9 @@ const winGuessesEl = document.querySelector<HTMLElement>("#win-guesses")!;
 const winOptimalEl = document.querySelector<HTMLElement>("#win-optimal")!;
 const winCtaBtn = document.querySelector<HTMLButtonElement>("#win-cta")!;
 
-const sfx = new Sfx(window.localStorage);
-let progress: Progress = loadProgress(window.localStorage);
+const storage = getSafeStorage(() => window.localStorage);
+const sfx = new Sfx(storage);
+let progress: Progress = loadProgress(storage);
 let view: "play" | "select" | "won" = "play";
 let level: LevelConfig = LEVELS.find((l) => l.id === nextUnplayedLevelId(LEVELS.map((l) => l.id), progress)) ?? LEVELS[0];
 let game: GameState = createGame(level);
@@ -236,7 +238,7 @@ function applyGuess(nextState: GameState): void {
 
   if (game.solved && !wasSolved) {
     progress = markLevelComplete(progress, level.id);
-    saveProgress(window.localStorage, progress);
+    saveProgress(storage, progress);
     sfx.success();
     showWinOverlay();
   }
