@@ -116,8 +116,12 @@ muteBtn.addEventListener("click", () => {
   updateMuteButton();
 });
 
+// Resolve the media query once; `.matches` stays live (so a mid-session
+// preference change is still honored) without allocating a MediaQueryList on
+// every animation frame.
+const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)") ?? null;
 function reducedMotion(): boolean {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  return reducedMotionQuery?.matches ?? false;
 }
 
 function updateStatus(): void {
